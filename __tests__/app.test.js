@@ -14,6 +14,7 @@ describe('/api', () => {
         .get('/api')
         .expect(200)
         .then(({body}) => {
+            
             expect(body.endpoints).toEqual(endpoints)
         })
     })
@@ -25,7 +26,7 @@ describe('/api/topics', () => {
         .get('/api/topics')
         .expect(200)
         .then(({body}) => {
-            expect(body.topics.length).toBeGreaterThan(0);
+            expect(body.topics.length).toBe(3);
             body.topics.forEach((topic) => {
               expect(typeof topic.slug).toBe('string');
               expect(typeof topic.description).toBe('string');
