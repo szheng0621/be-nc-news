@@ -1,5 +1,5 @@
 const {fetchTopics} = require('../models/topics-models.js')
-const {fetchArticlesById} = require('../models/artcles-models.js')
+const {fetchArticlesById, fetchArticles} = require('../models/artcles-models.js')
 
 exports.getTopics = (request, response, next) => {
     return fetchTopics().then((topics) => {
@@ -17,3 +17,13 @@ exports.getArticlesById = (request, response, next) => {
         next(err)
     })
 };
+
+exports.getArticles = (request, response, next) => {
+    const {sort_by, order = 'desc'} = request.query;
+    return fetchArticles(sort_by, order).then((articles) => {
+        response.status(200).send({articles})
+    }).catch((err) => {
+        next(err)
+    })
+};
+
