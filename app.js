@@ -4,6 +4,7 @@ const {getTopics} = require('./controllers/topics-controllers')
 const endpoints = require('./endpoints.json');
 
 app.get('/api', (request, response) => {
+    
     response.status(200).send({endpoints: endpoints})
 })
 
