@@ -77,7 +77,7 @@ describe('/api/articles/:article_id', () => {
         .get('/api/articles/88')
         .expect(404)
         .then(({body}) => {
-            expect(body.msg).toBe("article not found")
+            expect(body.msg).toBe("not found")
         })
     });
 
@@ -122,4 +122,60 @@ describe('/api/articles', () => {
             expect(body.msg).toBe("path not found")
         })
     })
+})
+
+describe('/api/articles/:article_id/comments', () => {
+    test('GET - 200 responds an array ofcomments for the given article_id', () =>{
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then(({body}) =>{
+            expect(body.comments).toBeInstanceOf(Array);
+            expect(body.comments.length).toBe(11);
+            body.comments.forEach((comment) => {
+                expect(comment).toHaveProperty('comment_id');
+                expect(comment).toHaveProperty('votes');
+                expect(comment).toHaveProperty('created_at');
+                expect(comment).toHaveProperty('author');
+                expect(comment).toHaveProperty('body');
+                expect(comment.article_id).toBe(1);
+            });
+        });
+    });
+    test('GET- 200 comments are served with the most recent comments first', () =>{
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then(({body}) => {
+            expect(body.comments).toBeSortedBy('created_at', {
+                descending: true});
+        });
+    });
+    test('GET - 400 responds with an appropriate error message when given an invalid id', () => {
+        return request(app)
+          .get('/api/articles/not-an-id/comments')
+          .expect(400)
+          .then(({body}) => {
+            expect(body.msg).toBe("bad request")
+          });
+      });
+    test('404 - responds with comment not found by searching article id which does not exist in the list', () => {
+        return request(app)
+        .get('/api/articles/99/comments')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe("not found")
+        })
+    });
+    test('200 - responds with empty array for the given article_id that is present but has no associated comments', () => {
+        return request(app)
+        .get('/api/articles/11/comments')
+        .expect(200)
+        .then(({body}) => {
+            expect(body.comments).toBeInstanceOf(Array);
+            expect(body.comments).toHaveLength(0);
+        })
+    })
+
+
 })
