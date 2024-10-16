@@ -176,6 +176,75 @@ describe('/api/articles/:article_id/comments', () => {
             expect(body.comments).toHaveLength(0);
         })
     })
-
-
 })
+
+describe.only('POST /api/articles/:article_id/comments', () => {
+    test('201 - responds with the posted comment', () => {
+        const postedComment = {
+            username: 'butter_bridge',
+            body: 'I like the article'
+        }
+        return request(app)
+            .post('/api/articles/5/comments')
+            .send(postedComment) 
+            .expect(201)
+            .then(({body}) => {
+                expect(body.comment.author).toBe('butter_bridge')
+                expect(body.comment.body).toBe('I like the article')
+                })
+            })
+        test('GET - 400 responds with an appropriate error message when given an invalid id', () => {
+            const postedComment = {
+                username: 'butter_bridge',
+                body: 'I like the article'
+            }
+                return request(app)
+                  .post('/api/articles/not-an-id/comments')
+                  .send(postedComment) 
+                  .expect(400)
+                  .then(({body}) => {
+                    expect(body.msg).toBe("bad request")
+                  });
+              });
+        test('404 - responds with comment not found by article id which does not exist in the list', () => {
+            const postedComment = {
+                username: 'butter_bridge',
+                body: 'I like the article'
+            }
+                return request(app)
+                .post('/api/articles/99/comments')
+                .send(postedComment)
+                .expect(404)
+                .then(({body}) => {
+                    expect(body.msg).toBe("not found")
+                })
+            });
+        test('404 - responds with an error when username is invalid', () => {
+                const postedComment = {
+                    username: 'new user',
+                    body: 'I like the article'
+                }
+                    return request(app)
+                    .post('/api/articles/1/comments')
+                    .send(postedComment)
+                    .expect(404)
+                    .then(({body}) => {
+                        expect(body.msg).toBe("not found")
+                    })
+                });
+        test('400 - responds with an error when no body content is provided', () =>{
+            const postedComment = {
+                username: 'butter_bridge',
+                body: ''
+            };
+            return request(app)
+            .post('/api/articles/1/comments')
+            .send(postedComment)
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe("body content is required")
+            })
+        });
+        
+    })
+

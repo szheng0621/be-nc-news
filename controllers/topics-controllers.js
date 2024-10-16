@@ -1,5 +1,5 @@
 const {fetchTopics} = require('../models/topics-models.js')
-const {fetchArticlesById, fetchArticles, fetchCommentsByArticleId} = require('../models/artcles-models.js')
+const {fetchArticlesById, fetchArticles, fetchCommentsByArticleId, fetchPostCommentByArticleId, fetchAllUsers} = require('../models/artcles-models.js')
 
 exports.getTopics = (request, response, next) => {
     return fetchTopics().then((topics) => {
@@ -40,3 +40,23 @@ exports.getCommentsByArticleId = (request, response, next) => {
     });
   };
 
+exports.postComments = (request, response, next) => {
+    const {article_id} = request.params;
+    const { username, body } = request.body;
+    if(!body || body.length === 0) {
+        return response.status(400).send({ msg: "body content is required" });
+    }
+    return fetchAllUsers(username)
+    .then(() => {      
+        return fetchArticlesById(article_id);
+    })
+    .then(() => {
+        return fetchPostCommentByArticleId(article_id, username, body);
+    })
+    .then((newComment) => {
+        response.status(201).send({ comment: newComment });
+    })
+    .catch((err) => {
+        next(err);
+    });
+}
