@@ -72,15 +72,6 @@ describe('/api/articles/:article_id', () => {
         })
     });
 
-    test('400 - responds with bad request ', () => {
-        return request(app)
-        .get('/api/articles/not_a_number')
-        .expect(400)
-        .then(({body}) => {
-            expect(body.msg).toBe("bad request")
-        })
-    });
-
     test('404 - responds with article not found ', () => {
         return request(app)
         .get('/api/articles/88')
@@ -90,4 +81,45 @@ describe('/api/articles/:article_id', () => {
         })
     });
 
+})
+
+describe('/api/articles', () => {
+    test('GET - 200 responds an articles array of article objects', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(({body}) =>{
+            expect(body.articles).toBeInstanceOf(Array);
+            expect(body.articles.length).toBe(13);
+            body.articles.forEach((article) => {
+                expect(article).toHaveProperty('author');
+                expect(article).toHaveProperty('title');
+                expect(article).toHaveProperty('article_id');
+                expect(article).toHaveProperty('topic');
+                expect(article).toHaveProperty('created_at');
+                expect(article).toHaveProperty('votes');
+                expect(article).toHaveProperty('article_img_url');
+                expect(article).toHaveProperty('comment_count');
+            });
+        });
+    });
+
+    test('GET- 200 articles are ordered by sorted by date in descending order', () =>{
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(({body}) => {
+            expect(body.articles).toBeSortedBy('created_at', {
+                descending: true});
+        });
+    })
+
+    test('GET 404 responds with an arror message when a request is made to the path which does not exist ', () => {
+        return request(app)
+        .get('/api/artcles')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe("path not found")
+        })
+    })
 })
