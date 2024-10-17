@@ -365,5 +365,40 @@ describe('/api/users', () => {
             })
          })
     })
-    // Here-could be 404 responds with an arror message when a request is made to a path which does not exist(e.g. /api/Osers), the error type has been handled from previous tasks. the Path not found error will apply all invalid path.
 })
+
+describe('/api/articles - featured sorts articles by any valid column in a specified order', () => {
+    test('GET-200, a query sorted by title and order by acsending', () => {
+        return request(app)
+        .get('/api/articles?sort_by=title&order=asc')
+        .expect(200)
+        .then(({body}) => {
+            expect(body.articles).toBeSortedBy('title',{
+                ascending: true })
+            });
+        });
+    test('GET-200, a query sorted by comment count and order by descending', () => {
+        return request(app)
+        .get('/api/articles?sort_by=comment_count&order=desc')
+        .expect(200)
+        .then(({body}) => {
+            expect(body.articles).toBeSortedBy('comment_count',{descending: true, coerce: true, })
+                });
+            });
+    test('GET-400, responds with an error for invalid column sort by query', () => {
+        return request(app)
+        .get('/api/articles?sort_by=invalid_column')
+        .expect(400)
+        .then(({ body }) => {
+            expect(body.msg).toBe('bad request');
+            });
+        });
+    test('GET-400, responds with an error for invalid order query', () => {
+        return request(app)
+        .get('/api/articles?sort_by=created_at&order=invalid_order')
+        .expect(400)
+        .then(({ body }) => {
+             expect(body.msg).toBe('bad request');
+                });
+        });
+    })
