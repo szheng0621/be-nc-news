@@ -11,7 +11,7 @@ exports.fetchArticlesById = (article_id) => {
     })
 };
 
-exports.fetchArticles = (sort_by = 'created_at', order = 'desc') => {
+exports.fetchArticles = (sort_by = 'created_at', order = 'desc', topic) => {
     const validSortBys = ["created_at", "title", "comment_count", "topic", "votes"]; 
     const validOrderDirects  = ['asc', 'desc'];
     if (!validSortBys.includes(sort_by)) {
@@ -20,7 +20,8 @@ exports.fetchArticles = (sort_by = 'created_at', order = 'desc') => {
     if (!validOrderDirects.includes(order)) {
         return Promise.reject({ status: 400, msg: 'bad request' });
       }
-    return db.query(`
+    const queryValues = [];
+    let queryStr =`
    SELECT 
     articles.author,    
     articles.title,
@@ -33,15 +34,27 @@ exports.fetchArticles = (sort_by = 'created_at', order = 'desc') => {
 FROM 
     articles
 LEFT JOIN 
-    comments ON comments.article_id = articles.article_id
-GROUP BY 
-    articles.article_id
-ORDER BY ${sort_by} ${order} ;
-`)
-.then((result) => {
-  return result.rows;
-});
-};
+    comments ON comments.article_id = articles.article_id`;
+
+if (topic === "") {
+    return Promise.reject({ status: 400, msg: "bad request" });
+    }
+
+if(topic) {
+    queryStr +=  ` WHERE topic = $1`;
+    queryValues.push(topic);
+}
+queryStr += ` GROUP BY articles.article_id 
+ORDER BY ${sort_by} ${order}`;
+
+return db.query(queryStr, queryValues)
+    .then((result) => {
+    if (result.rows.length === 0){
+        return Promise.reject({status: 404, msg: "not found"})
+      }
+      return result.rows;
+    });
+  };
 
 exports.fetchCommentsByArticleId = (article_id) => {
     return db.query(`SELECT * 

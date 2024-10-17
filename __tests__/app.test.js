@@ -402,3 +402,44 @@ describe('/api/articles - featured sorts articles by any valid column in a speci
                 });
         });
     })
+
+describe('/api/articles - topic query', () => {
+    test('GET - 200 takes a topic query and responds with all articles which are filtered out by a specified value - cats', () => {
+        return request(app)
+        .get('/api/articles?topic=cats')
+        .expect(200)
+        .then(({body}) => {
+            expect(body.articles.length).toBe(1);
+            body.articles.forEach((article) => {
+                expect(article.topic).toBe('cats');         
+            })
+        })
+    });
+    test('GET - 200 responds with all articles which are filtered out by a specified value - mitch', () => {
+        return request(app)
+        .get('/api/articles?topic=mitch')
+        .expect(200)
+        .then(({body}) => {
+            expect(body.articles.length).toBe(12);
+            body.articles.forEach((article) => {
+                expect(article.topic).toBe('mitch');         
+            })
+        })
+    });
+    test('GET - 400, responds with an error when topic has empty value', () => {
+        return request(app)
+        .get('/api/articles?topic=')
+        .expect(400)
+        .then(({ body }) => {
+             expect(body.msg).toBe('bad request');
+        });
+    }); 
+    test('GET - 404, responds with an error when topic value does not exist', () => {
+        return request(app)
+        .get('/api/articles?topic=dogs')
+        .expect(404)
+        .then(({ body }) => {
+            expect(body.msg).toBe('not found');
+        });
+    });             
+});
