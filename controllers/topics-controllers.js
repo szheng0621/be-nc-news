@@ -1,5 +1,5 @@
 const {fetchTopics} = require('../models/topics-models.js')
-const {fetchArticlesById, fetchArticles, fetchCommentsByArticleId, fetchPostCommentByArticleId, fetchAllUsers} = require('../models/artcles-models.js')
+const {fetchArticlesById, fetchArticles, fetchCommentsByArticleId, fetchPostCommentByArticleId, fetchAllUsers, fetchUpdatedArticle} = require('../models/artcles-models.js')
 
 exports.getTopics = (request, response, next) => {
     return fetchTopics().then((topics) => {
@@ -59,4 +59,17 @@ exports.postComments = (request, response, next) => {
     .catch((err) => {
         next(err);
     });
+}
+
+exports.patchArticlesById = (request, response, next) => {
+    const {article_id} = request.params;
+    const { inc_votes } = request.body;
+    if (inc_votes === 0) {
+        return response.status(204).send({})
+    }
+    return fetchUpdatedArticle(article_id, inc_votes).then((article) => {
+        response.status(200).send({article})
+    }).catch((err) => {
+        next(err)
+    })
 }
