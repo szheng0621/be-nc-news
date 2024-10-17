@@ -56,7 +56,7 @@ exports.fetchPostCommentByArticleId = (article_id, username, body) => {
 
             return result.rows[0];
         })
-}
+};
 
 exports.fetchAllUsers = (username) => {
     return db.query('SELECT username FROM users;')
@@ -67,7 +67,7 @@ exports.fetchAllUsers = (username) => {
         }
         return validUserNames;
     })
-}
+};
 
 exports.fetchUpdatedArticle = (article_id, inc_votes) => {
         return db.query(`
@@ -81,4 +81,9 @@ exports.fetchUpdatedArticle = (article_id, inc_votes) => {
         }
         return result.rows[0]
     })
-}
+};
+
+exports.removeCommentById = (comment_id) => {
+    return db.query('DELETE FROM comments WHERE comment_id = $1;', [comment_id])
+
+};
