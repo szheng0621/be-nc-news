@@ -11,7 +11,7 @@
   },
   "GET /api/articles": {
     "description": "serves an array of all articles, including comment count for each article. Articles are sorted by date in descending order by default.",
-    "queries": ["sort_by(default: created_at)", "order (default: desc)"],
+    "queries": ["sort_by(default: created_at)", "order (default: desc)","title", "comment_count", "topic", "votes", "order"],
     "exampleResponse": {
       "articles": [
         {

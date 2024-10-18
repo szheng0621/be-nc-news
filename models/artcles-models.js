@@ -12,6 +12,14 @@ exports.fetchArticlesById = (article_id) => {
 };
 
 exports.fetchArticles = (sort_by = 'created_at', order = 'desc') => {
+    const validSortBys = ["created_at", "title", "comment_count", "topic", "votes"]; 
+    const validOrderDirects  = ['asc', 'desc'];
+    if (!validSortBys.includes(sort_by)) {
+        return Promise.reject({status : 400, msg: "bad request"});
+    }
+    if (!validOrderDirects.includes(order)) {
+        return Promise.reject({ status: 400, msg: 'bad request' });
+      }
     return db.query(`
    SELECT 
     articles.author,    
