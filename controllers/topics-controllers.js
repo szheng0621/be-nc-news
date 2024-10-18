@@ -1,5 +1,5 @@
 const {fetchTopics} = require('../models/topics-models.js')
-const {fetchArticlesById, fetchArticles, fetchCommentsByArticleId, fetchPostCommentByArticleId, fetchAllUsers, fetchUpdatedArticle, removeCommentById} = require('../models/artcles-models.js')
+const {fetchArticlesById, fetchArticles, fetchCommentsByArticleId, fetchPostCommentByArticleId, fetchAllUsers, fetchUpdatedArticle, removeCommentById, fetchUsers} = require('../models/artcles-models.js')
 
 exports.getTopics = (request, response, next) => {
     return fetchTopics().then((topics) => {
@@ -86,3 +86,11 @@ exports.deleteCommentById = (request, response, next) => {
         next(err)
     });
 };
+
+exports.getUsers = (request, response, next) => {
+    return fetchUsers().then((users) => {
+        response.status(200).send({users})
+    }).catch((err) => {
+        next(err)
+    })
+}

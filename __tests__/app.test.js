@@ -350,5 +350,20 @@ describe('/api/comments/:comment_id', () =>{
       });
 })
 
-
-
+describe('/api/users', () => {
+    test('GET - 200 responds an array of objects which contains all users data', () => {
+        return request(app)
+        .get('/api/users')
+        .expect(200)
+        .then(({body}) =>{
+            expect(body.users).toBeInstanceOf(Array);
+            expect(body.users.length).toBe(4);
+            body.users.forEach((user) => {
+                expect(user).toHaveProperty('username');
+                expect(user).toHaveProperty('name');
+                expect(user).toHaveProperty('avatar_url');
+            })
+         })
+    })
+    // Here-could be 404 responds with an arror message when a request is made to a path which does not exist(e.g. /api/Osers), the error type has been handled from previous tasks. the Path not found error will apply all invalid path.
+})
