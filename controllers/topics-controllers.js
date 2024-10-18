@@ -1,5 +1,5 @@
 const {fetchTopics} = require('../models/topics-models.js')
-const {fetchArticlesById, fetchArticles, fetchCommentsByArticleId, fetchPostCommentByArticleId, fetchAllUsers, fetchUpdatedArticle} = require('../models/artcles-models.js')
+const {fetchArticlesById, fetchArticles, fetchCommentsByArticleId, fetchPostCommentByArticleId, fetchAllUsers, fetchUpdatedArticle, removeCommentById} = require('../models/artcles-models.js')
 
 exports.getTopics = (request, response, next) => {
     return fetchTopics().then((topics) => {
@@ -59,7 +59,7 @@ exports.postComments = (request, response, next) => {
     .catch((err) => {
         next(err);
     });
-}
+};
 
 exports.patchArticlesById = (request, response, next) => {
     const {article_id} = request.params;
@@ -71,5 +71,18 @@ exports.patchArticlesById = (request, response, next) => {
         response.status(200).send({article})
     }).catch((err) => {
         next(err)
-    })
-}
+    });
+};
+
+exports.deleteCommentById = (request, response, next) => {
+    const { comment_id } = request.params;
+    removeCommentById(comment_id)
+    .then((result) => {
+        if (result.rowCount === 0) {
+        return Promise.reject({ status: 404, msg: "not found" });
+        }
+        response.status(204).send();
+    }).catch((err) => {
+        next(err)
+    });
+};
