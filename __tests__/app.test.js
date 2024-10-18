@@ -441,5 +441,44 @@ describe('/api/articles - topic query', () => {
         .then(({ body }) => {
             expect(body.msg).toBe('not found');
         });
-    });             
+    });            
 });
+
+describe('/api/articles/:article_id - comment_count', () => {
+    test('200 respond with an article with the count of all the comments with the article_id', () => {
+        return request(app)
+        .get('/api/articles/1?comment_count')
+        .expect(200)
+        .then(({ body }) => {
+            expect(body.article.article_id).toBe(1);
+            expect(body.article.comment_count).toBe("11");   
+
+        });
+    });
+    test('400 responds with an error when invalid id type provided', () => {
+        return request(app)
+            .get('/api/articles/not-a-number?comment_count') 
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('bad request');
+            });
+    });
+    test('404 responds with an error when the article id does not exist', () => {
+        return request(app)
+            .get('/api/articles/99?comment_count')
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe('not found');
+            });
+    });
+    test('200 - responds with 0 count for the valid article_id but has no associated comment count', () => {
+        return request(app)
+        .get('/api/articles/8?comment_count')
+        .expect(200)
+        .then(({ body }) => {
+            expect(body.article.article_id).toBe(8);
+            expect(body.article.comment_count).toBe("0");   
+
+        });
+    });
+})
