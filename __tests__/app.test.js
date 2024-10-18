@@ -441,7 +441,15 @@ describe('/api/articles - topic query', () => {
         .then(({ body }) => {
             expect(body.msg).toBe('not found');
         });
-    });            
+    });
+    test('GET - 200, a valid query but has no associate articles which responds with an empty array of articles ', () => {
+        return request(app)
+        .get('/api/articles?topic=paper')
+        .expect(200)
+        .then(({ body }) => {
+            expect(body.articles).toEqual([]);
+        });
+    });             
 });
 
 describe('/api/articles/:article_id - comment_count', () => {

@@ -20,7 +20,14 @@ exports.getArticlesById = (request, response, next) => {
 
 exports.getArticles = (request, response, next) => {
     const {sort_by, order, topic} = request.query;
-    return fetchArticles(sort_by, order, topic).then((articles) => {
+    fetchTopics().then((topics) => {
+        const validTopics = topics.map(topic => topic.slug);
+            if (topic && !validTopics.includes(topic)) {
+                return Promise.reject({ status: 404, msg: "not found" });
+            }
+        return fetchArticles(sort_by, order, topic);
+    })
+    .then((articles) => {
         response.status(200).send({articles})
     }).catch((err) => {
         next(err)

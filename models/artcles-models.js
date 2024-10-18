@@ -66,10 +66,9 @@ ORDER BY ${sort_by} ${order}`;
 
 return db.query(queryStr, queryValues)
     .then((result) => {
-        // console.log(result.rows[0], "<<<<model 52")
-    if (result.rows.length === 0){
-        return Promise.reject({status: 404, msg: "not found"})
-      }
+    // if (result.rows.length === 0){
+    //     return Promise.reject({status: 404, msg: "not found"})
+    //   }
       return result.rows;
     });
   };
