@@ -178,7 +178,7 @@ describe('/api/articles/:article_id/comments', () => {
     })
 })
 
-describe.only('POST /api/articles/:article_id/comments', () => {
+describe('POST /api/articles/:article_id/comments', () => {
     test('201 - responds with the posted comment', () => {
         const postedComment = {
             username: 'butter_bridge',
@@ -244,7 +244,74 @@ describe.only('POST /api/articles/:article_id/comments', () => {
             .then(({body}) => {
                 expect(body.msg).toBe("body content is required")
             })
-        });
-        
+        });      
     })
+
+describe('PATCH /api/articles/:article_id', () => {
+    test('200 - responds with the updated article which has incremented vote', () => {
+        const newVote = { inc_votes: 1 };
+        return request(app)
+            .patch('/api/articles/1')
+            .send(newVote)
+            .expect(200)
+            .then(({body}) => {
+                expect(body.article.article_id).toBe(1)
+                expect(body.article.votes).toBe(101)
+            }) 
+    });
+    test('200 - responds with the updated article which has decremented vote but set to default 0 if vote becomes lower than 0', () => {
+        const newVote = { inc_votes: -10 };
+        return request(app)
+            .patch('/api/articles/5')
+            .send(newVote)
+            .expect(200)
+            .then(({body}) => {
+                expect(body.article.article_id).toBe(5)
+                expect(body.article.votes).toBe(0)
+            }) 
+    });
+    test('400 - responds with bad request when inc_votes is not a number', () => {
+        const invalidVote = { inc_votes: 'not-a-number' };
+        return request(app)
+            .patch('/api/articles/1')
+            .send(invalidVote)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('bad request');
+            });
+    });
+    test('400 - responds with bad request when inc_votes is not provided and it is empty', () => {
+        const invalidVote = { inc_votes: '' };
+        return request(app)
+            .patch('/api/articles/1')
+            .send(invalidVote)
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('bad request');
+            });
+    });
+    test('404 - responds with an error when the article can not be found and vote can not be updated ', () => {
+        const newVote = { inc_votes: 1 };
+        return request(app)
+            .patch('/api/articles/99')
+            .send(newVote)
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe('not found');
+            });
+    });
+    test('204 - responds with no updates in votes and empty body', () => {
+        const newVote = { inc_votes: 0 };
+        return request(app)
+            .patch('/api/articles/9')
+            .send(newVote)
+            .expect(204)
+            .then(({ body }) => {
+                expect(body).toEqual({});
+            });
+    });
+
+})
+
+
 

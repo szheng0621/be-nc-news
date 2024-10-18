@@ -68,3 +68,17 @@ exports.fetchAllUsers = (username) => {
         return validUserNames;
     })
 }
+
+exports.fetchUpdatedArticle = (article_id, inc_votes) => {
+        return db.query(`
+        UPDATE articles 
+        SET votes = GREATEST(votes + $1, 0)
+        WHERE article_id = $2
+        RETURNING *;`, [inc_votes, article_id])
+    .then((result) => {
+        if (result.rows.length === 0) {
+            return Promise.reject({ status: 404, msg: "not found" });
+        }
+        return result.rows[0]
+    })
+}
