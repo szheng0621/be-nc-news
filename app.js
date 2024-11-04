@@ -2,8 +2,11 @@ const express = require("express");
 const app = express();
 const {getTopics, getArticlesById, getArticles, getCommentsByArticleId, postComments, patchArticlesById, deleteCommentById, getUsers} = require('./controllers/topics-controllers')
 const endpoints = require('./endpoints.json');
+const cors = require('cors');
 
 app.use(express.json());
+
+app.use(cors());
 
 app.get('/api', (request, response) => {    
     response.status(200).send({endpoints: endpoints})
