@@ -49,8 +49,8 @@ npm install .
 
 3. Set Up Environment Variables: 
 Create two .env files in the root directory of the project:
-.env.development (PGDATABASE=nc_news)
-.env.test (PGDATABASE=nc_news_test)
+.env.development (PGDATABASE=sample_news) // change to your table name here
+.env.test (PGDATABASE=sample_news_test) // change to your test table name here
 
 
 4. Seed the Local Database:
